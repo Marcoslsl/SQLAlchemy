@@ -1,27 +1,52 @@
 from src.infra.configs.connection import DBConnectionHandler
-from src.infra.entities.filmes import Filme
+from src.infra.entities import Filmes
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class FilmesRepo:
+    def __init__(self, connectionHandler) -> None:
+        self.__connectionHandler = connectionHandler
+
     def select(self):
-        with DBConnectionHandler() as db:
-            data = db.session.query(Filme).all()
-            return data
+        with self.__connectionHandler() as db:
+            try:
+                data = db.session.query(Filmes).all()
+                return data
+            except NoResultFound:
+                raise None
+            except Exception as e:
+                db.session.rollback()
+                raise e
 
     def insert(self, titulo, genero, ano):
-        with DBConnectionHandler() as db:
-            data_insert = Filme(titulo=titulo, genero=genero, ano=ano)
-            db.session.add(data_insert)
-            db.session.commit()
+        with self.__connectionHandler() as db:
+            try:
+                data_insert = Filmes(titulo=titulo, genero=genero, ano=ano)
+                db.session.add(data_insert)
+                db.session.commit()
+                return data_insert
+            except Exception as e:
+                db.session.rollback()
+                raise e
 
     def delete(self, titulo):
-        with DBConnectionHandler() as db:
-            db.session.query(Filme).filter(Filme.titulo == titulo).delete()
-            db.session.commit()
+        with self.__connectionHandler() as db:
+            try:
+                db.session.query(Filmes).filter(
+                    Filmes.titulo == titulo
+                ).delete()
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                raise e
 
     def update(self, titulo, ano):
-        with DBConnectionHandler() as db:
-            db.session.query(Filme).filter(Filme.titulo == titulo).update(
-                {"ano": ano}
-            )
-            db.session.commit()
+        with self.__connectionHandler() as db:
+            try:
+                db.session.query(Filmes).filter(
+                    Filmes.titulo == titulo
+                ).update({"ano": ano})
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                raise e

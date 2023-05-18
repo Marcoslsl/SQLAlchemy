@@ -1,1 +1,2 @@
-from .filmes import Filme
+from .filmes import Filmes
+from .atores import Atores

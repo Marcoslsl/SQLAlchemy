@@ -9,7 +9,7 @@ session = Session()
 
 
 # Entities
-class Filme(Base):
+class Filmes(Base):
     __tablename__ = "filmes"
 
     titulo = Column(String, primary_key=True)
@@ -18,28 +18,29 @@ class Filme(Base):
 
     def __repr__(self):
         return (
-            f"""Filme(titulo={self.titulo}"""
+            f"""Filmes(titulo={self.titulo}"""
             """, genero={self.genero}, ano={self.ano})"""
         )
+
 
 # SQL
 
 # Insert
-data_insert = Filme(titulo="Batman", genero="Drama", ano=2022)
+data_insert = Filmes(titulo="Batman", genero="Drama", ano=2022)
 session.add(data_insert)
 session.commit()
 
 # Delete
-session.query(Filme).filter(Filme.titulo == "Batman").delete()
+session.query(Filmes).filter(Filmes.titulo == "Batman").delete()
 session.commit()
 
 # update
-session.query(Filme).filter(Filme.genero == "Drama").update({"ano": 2000})
+session.query(Filmes).filter(Filmes.genero == "Drama").update({"ano": 2000})
 session.commit()
 
 # commit
 session.close()
 
 # SELECT
-data = session.query(Filme).all()
+data = session.query(Filmes).all()
 print(data)
